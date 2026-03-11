@@ -34,6 +34,7 @@ sdk-go/coverage
 
 # Local tools and generated binaries
 .tools/
+.mintlify/
 
 # Editors and OS files
 .DS_Store

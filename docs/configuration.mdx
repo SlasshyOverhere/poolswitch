@@ -1,0 +1,97 @@
+---
+title: 'Configuration'
+description: 'Configure routing, retries, cooldowns, storage, and keys for embedded or proxy mode.'
+---
+
+PoolSwitch configuration is shared across both modes:
+
+- embedded Python client
+- proxy server
+
+The same concepts apply in both cases:
+
+- upstream API base URL
+- auth header settings
+- retry attempts
+- cooldown duration
+- rate limiting
+- storage backend
+- key definitions
+
+## Example Configuration
+
+```yaml poolswitch.yaml
+listen_host: 127.0.0.1
+listen_port: 8080
+upstream_base_url: https://api.openai.com
+auth_header_name: Authorization
+auth_scheme: Bearer
+strategy: quota_failover
+retry_attempts: 3
+cooldown_seconds: 3600
+request_timeout_seconds: 60
+connect_timeout_seconds: 10
+rate_limit_per_second: 50
+metrics_enabled: true
+storage:
+  backend: memory
+  sqlite_path: poolswitch.db
+  redis_url: redis://localhost:6379/0
+  namespace: poolswitch
+keys:
+  - id: openai-primary
+    value: sk-123
+    monthly_quota: 10000
+  - id: openai-secondary
+    value: sk-456
+```
+
+## Settings Reference
+
+<ResponseField name="listen_host" type="string" default="127.0.0.1">
+  The IP address to bind the proxy to in server mode.
+</ResponseField>
+<ResponseField name="listen_port" type="integer" default="8080">
+  The port for the proxy server in server mode.
+</ResponseField>
+<ResponseField name="upstream_base_url" type="string" required>
+  The base URL of the provider API (e.g., `https://api.openai.com`).
+</ResponseField>
+<ResponseField name="auth_header_name" type="string" required>
+  The header used for authentication (e.g., `Authorization`, `api-key`).
+</ResponseField>
+<ResponseField name="auth_scheme" type="string" default="Bearer">
+  Optional auth scheme prepended to the key value. Set it to `null` for raw header values such as `x-api-key`.
+</ResponseField>
+<ResponseField name="strategy" type="string" default="round_robin">
+  Strategy to choose the next key (`round_robin`, `least_used`, `random`, `quota_failover`).
+</ResponseField>
+<ResponseField name="retry_attempts" type="integer" default="3">
+  How many attempts PoolSwitch should make before returning the final error.
+</ResponseField>
+<ResponseField name="cooldown_seconds" type="integer" default="3600">
+  How long to disable a key after quota exhaustion.
+</ResponseField>
+<ResponseField name="rate_limit_per_second" type="number" default="50">
+  Local request shaping applied before a call is sent upstream.
+</ResponseField>
+<ResponseField name="keys" type="list" required>
+  A list of API keys. Each key can include `id`, `value`, `monthly_quota`, and `metadata`.
+</ResponseField>
+<ResponseField name="storage.backend" type="string" default="memory">
+  The state persistence backend (`memory`, `sqlite`, `redis`).
+</ResponseField>
+<ResponseField name="retryable_methods" type="list" default='["GET", "HEAD", "OPTIONS", "DELETE", "POST"]'>
+  HTTP methods that PoolSwitch is allowed to retry automatically.
+</ResponseField>
+
+## Environment variables
+
+Server deployments can also override config with environment variables such as:
+
+- `POOLSWITCH_UPSTREAM_BASE_URL`
+- `POOLSWITCH_KEYS`
+- `POOLSWITCH_STRATEGY`
+- `POOLSWITCH_RETRY_ATTEMPTS`
+- `POOLSWITCH_COOLDOWN_SECONDS`
+- `POOLSWITCH_STORAGE_BACKEND`

@@ -1,0 +1,112 @@
+---
+title: 'Embedded Python Client'
+description: 'Use PoolSwitch directly inside a Python application without running a separate server.'
+---
+
+## Overview
+
+The embedded Python client is the easiest way to use PoolSwitch.
+
+Instead of running a local proxy and pointing your app at `localhost`, you import a client and give it:
+
+- the upstream API base URL
+- a list of keys
+- a routing strategy
+- optional retry, cooldown, and storage settings
+
+## Synchronous client
+
+```python
+from poolswitch import PoolSwitchClient
+
+client = PoolSwitchClient(
+    upstream_base_url="https://api.example.com",
+    keys=[
+        {"id": "free-1", "value": "key-1"},
+        {"id": "free-2", "value": "key-2"},
+        {"id": "free-3", "value": "key-3"},
+    ],
+    strategy="quota_failover",
+    retry_attempts=3,
+    cooldown_seconds=3600,
+)
+
+result = client.post("/search", json={"q": "poolswitch"})
+print(result)
+```
+
+## Async client
+
+```python
+from poolswitch import AsyncPoolSwitchClient
+
+async with AsyncPoolSwitchClient(
+    upstream_base_url="https://api.example.com",
+    keys=["key-1", "key-2", "key-3"],
+    strategy="quota_failover",
+) as client:
+    result = await client.get("/search", params={"q": "poolswitch"})
+    print(result)
+```
+
+## Supported key formats
+
+You can pass keys as:
+
+- plain strings
+- dictionaries with `id`, `value`, and optional metadata
+- `KeyConfig` objects
+
+```python
+from poolswitch import PoolSwitchClient
+
+client = PoolSwitchClient(
+    upstream_base_url="https://api.example.com",
+    keys=[
+        "key-1",
+        {"id": "free-2", "value": "key-2", "monthly_quota": 100},
+        {"id": "paid", "value": "key-3", "metadata": {"tier": "pro"}},
+    ],
+)
+```
+
+## What the client does for you
+
+When you call `get`, `post`, `put`, `patch`, or `delete`, PoolSwitch automatically:
+
+- chooses a healthy key
+- injects the configured auth header
+- retries network failures and retryable `429` responses
+- cools down quota-exhausted keys
+- fails over to the next key when needed
+
+## Inspecting status
+
+You can inspect in-memory state at runtime:
+
+```python
+status = client.status()
+print(status)
+```
+
+That includes:
+
+- total requests per key
+- error counts
+- failover counts
+- estimated remaining quota
+- cooldown timestamps
+
+## When to choose embedded mode
+
+Use embedded mode when:
+
+- your app is already written in Python
+- you want zero extra infrastructure
+- each service should manage its own key pool locally
+
+Use proxy mode instead when:
+
+- non-Python services need access
+- multiple apps should share the same pool over HTTP
+- you want one internal gateway for many consumers

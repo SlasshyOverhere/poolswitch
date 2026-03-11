@@ -76,3 +76,15 @@ curl -X POST http://127.0.0.1:8080/v1/chat/completions \
 
 See [`docs/architecture.md`](./docs/architecture.md) for the design and the SDK folders for client usage.
 
+## Docs Site
+
+This repo now includes a Mintlify docs setup powered by [`docs.json`](./docs.json).
+
+Preview locally with:
+
+```bash
+npx mint dev
+```
+
+The content lives in [`docs`](./docs).
+
