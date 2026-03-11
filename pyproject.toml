@@ -9,7 +9,7 @@ description = "Production-grade PoolSwitch proxy with quota failover and multi-l
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "OpenAI Codex" }]
+authors = [{ name = "SlasshyOverhere" }]
 keywords = ["proxy", "api", "rate-limit", "quota", "failover", "sdk"]
 classifiers = [
   "Development Status :: 4 - Beta",

@@ -9,6 +9,7 @@ description = "Lightweight Python SDK for the PoolSwitch proxy."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
+authors = [{ name = "SlasshyOverhere" }]
 dependencies = ["httpx>=0.28.1"]
 
 [tool.hatch.build.targets.wheel]
