@@ -1,6 +1,17 @@
 import { defineConfig } from "vitepress";
 
+function docsBase() {
+  const repository = process.env.GITHUB_REPOSITORY?.split("/")[1];
+
+  if (!process.env.GITHUB_ACTIONS || !repository) {
+    return "/";
+  }
+
+  return repository.endsWith(".github.io") ? "/" : `/${repository}/`;
+}
+
 export default defineConfig({
+  base: docsBase(),
   title: "PoolSwitch",
   description: "API key rotation, quota failover, retries, and cooldowns for embedded apps or proxy deployments.",
   lang: "en-US",
@@ -53,7 +64,6 @@ export default defineConfig({
       { icon: "github", link: "https://github.com/SlasshyOverhere/poolswitch" }
     ],
     footer: {
-      message: "Built with VitePress for portable static hosting.",
       copyright: "Copyright 2026 PoolSwitch"
     }
   }

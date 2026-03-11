@@ -1,6 +1,6 @@
 ---
 title: Deployment
-description: Build the PoolSwitch docs into static files and deploy them to Netlify, Vercel, or any static host.
+description: Build the PoolSwitch docs into static files and deploy them to GitHub Pages, Netlify, Vercel, or any static host.
 ---
 
 # Deployment
@@ -29,6 +29,23 @@ docs/.vitepress/dist
 ```
 
 That folder is what you can zip and deploy anywhere.
+
+## GitHub Pages
+
+This repo already includes [.github/workflows/pages.yml](/.github/workflows/pages.yml).
+
+To use it:
+
+1. Push to `main`
+2. In GitHub, open `Settings -> Pages`
+3. Set the source to `GitHub Actions`
+4. Wait for the `Docs` workflow to finish
+
+For this repository, the site will publish under:
+
+```text
+https://slasshyoverhere.github.io/poolswitch/
+```
 
 ## Netlify
 

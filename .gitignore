@@ -26,6 +26,8 @@ yarn-error.log*
 pnpm-debug.log*
 coverage/
 .c8_output/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
 
 # Go
 coverage.out
