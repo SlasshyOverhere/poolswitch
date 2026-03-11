@@ -1,11 +1,13 @@
 ---
-title: 'Proxy Mode'
-description: 'Run PoolSwitch as a local or shared HTTP gateway for any language.'
+title: Proxy Mode
+description: Run PoolSwitch as a local or shared HTTP gateway for any language.
 ---
+
+# Proxy Mode
 
 ## Overview
 
-Proxy mode is useful when your callers are not Python-only.
+Proxy mode is useful when your callers are not Python-only or Node-only.
 
 Your app sends requests to PoolSwitch:
 
@@ -59,12 +61,11 @@ keys:
     value: sk-456
 ```
 
-## Calling the proxy with SDKs
+## Calling the proxy
 
-The thin SDKs are useful in proxy mode because they just forward to the local or shared PoolSwitch URL.
+### Python
 
-<CodeGroup>
-```python Python
+```python
 from poolswitch_client import PoolSwitchClient
 
 client = PoolSwitchClient("http://127.0.0.1:8080")
@@ -77,7 +78,9 @@ result = client.post(
 )
 ```
 
-```javascript Node.js
+### Node.js
+
+```js
 const { PoolSwitchProxyClient } = require("poolswitch-node");
 
 const client = new PoolSwitchProxyClient("http://127.0.0.1:8080");
@@ -89,7 +92,9 @@ const result = await client.post("/v1/chat/completions", {
 });
 ```
 
-```go Go
+### Go
+
+```go
 package main
 
 import (
@@ -113,7 +118,6 @@ func main() {
 	fmt.Println(out)
 }
 ```
-</CodeGroup>
 
 ## When to choose proxy mode
 
@@ -123,4 +127,4 @@ Use proxy mode when:
 - you want a shared pool for several services
 - you want Prometheus metrics from one HTTP endpoint
 
-If your app is already in JavaScript or TypeScript and does not need a shared gateway, use the [embedded Node.js client](/docs/embedded-node) instead.
+If your app is already in JavaScript or TypeScript and does not need a shared gateway, use the [embedded Node.js client](/embedded-node) instead.

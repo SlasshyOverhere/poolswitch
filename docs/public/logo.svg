@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="PoolSwitch logo">
+  <rect width="64" height="64" rx="16" fill="#0d9373"/>
+  <path d="M20 21h24a8 8 0 0 1 0 16H29v10h-9V21zm9 9h14a1 1 0 0 0 0-2H29v2z" fill="#ffffff"/>
+  <path d="M18 43h13a8 8 0 0 1 0-16h15v7H31a1 1 0 0 0 0 2h15v7H18z" fill="#99f6e4"/>
+</svg>

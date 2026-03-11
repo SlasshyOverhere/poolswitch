@@ -103,13 +103,20 @@ See [`docs/architecture.md`](./docs/architecture.md) for the design and the SDK 
 
 ## Docs Site
 
-This repo now includes a Mintlify docs setup powered by [`docs.json`](./docs.json).
+This repo now includes a VitePress docs site in [`docs`](./docs).
 
 Preview locally with:
 
 ```bash
-npx mint dev
+npm install
+npm run docs:dev
 ```
 
-The content lives in [`docs`](./docs).
+Build static files with:
+
+```bash
+npm run docs:build
+```
+
+The deployable output is written to `docs/.vitepress/dist`, which can be uploaded directly to Netlify, Vercel, or any static host.
 

@@ -1,7 +1,9 @@
 ---
-title: 'Metrics and Health'
-description: 'Observe PoolSwitch with health checks, status, and Prometheus-compatible metrics.'
+title: Metrics and Health
+description: Observe PoolSwitch with health checks, status, and Prometheus-compatible metrics.
 ---
+
+# Metrics and Health
 
 ## Health endpoints
 
@@ -17,7 +19,7 @@ PoolSwitch exposes:
 
 `GET /status` returns a JSON snapshot of the current key pool.
 
-Example fields:
+Typical fields:
 
 - strategy
 - storage backend
@@ -54,4 +56,4 @@ In production, teams usually:
 
 ## Embedded mode note
 
-In embedded Python mode, the same metrics objects still exist inside the process, but there is no HTTP `/metrics` route unless you also run the proxy server.
+In embedded mode, the same metrics objects still exist inside the process, but there is no HTTP `/metrics` route unless you also run the proxy server.

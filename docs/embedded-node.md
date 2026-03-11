@@ -1,7 +1,9 @@
 ---
-title: 'Embedded Node.js Client'
-description: 'Use PoolSwitch directly inside a Node.js or TypeScript app without running a separate proxy.'
+title: Embedded Node.js Client
+description: Use PoolSwitch directly inside a Node.js or TypeScript app without running a separate proxy.
 ---
+
+# Embedded Node.js Client
 
 ## Overview
 
@@ -14,7 +16,7 @@ You give PoolSwitch:
 - an optional routing strategy
 - retry and cooldown settings when you need them
 
-Then you use it like a normal `fetch`-style client.
+Then you use it like a normal client.
 
 ## Install
 
@@ -57,25 +59,31 @@ This is the main embedded flow:
 ```js
 const { PoolSwitchClient } = require("poolswitch-node");
 
-const client = new PoolSwitchClient({
-  upstreamBaseUrl: "https://api.openai.com",
-  keys: [
-    { id: "openai-free-1", value: process.env.OPENAI_KEY_1 },
-    { id: "openai-free-2", value: process.env.OPENAI_KEY_2 }
-  ]
-});
+async function main() {
+  const client = new PoolSwitchClient({
+    upstreamBaseUrl: "https://api.openai.com",
+    keys: [
+      { id: "openai-free-1", value: process.env.OPENAI_KEY_1 },
+      { id: "openai-free-2", value: process.env.OPENAI_KEY_2 }
+    ]
+  });
 
-const response = await client.post("/v1/chat/completions", {
-  json: {
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: "Hello" }]
-  }
-});
+  const response = await client.post("/v1/chat/completions", {
+    json: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "Hello" }]
+    }
+  });
+
+  console.log(response.choices[0].message.content);
+}
+
+main();
 ```
 
 ## Key formats
 
-You can pass keys as plain strings:
+Plain strings:
 
 ```ts
 const client = new PoolSwitchClient({
@@ -84,7 +92,7 @@ const client = new PoolSwitchClient({
 });
 ```
 
-Or as objects when you want stable ids or quota metadata:
+Objects with ids or quota metadata:
 
 ```ts
 const client = new PoolSwitchClient({
@@ -110,14 +118,14 @@ When you call `get`, `post`, `put`, `patch`, or `delete`, PoolSwitch automatical
 - cools down quota-exhausted keys
 - fails over to another key when needed
 
-## Checking client status
+## Check status at runtime
 
 ```ts
 const status = client.status();
 console.log(status.keys);
 ```
 
-That includes:
+You get:
 
 - total requests per key
 - error counts

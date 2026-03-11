@@ -1,7 +1,9 @@
 ---
-title: 'Embedded Python Client'
-description: 'Use PoolSwitch directly inside a Python application without running a separate server.'
+title: Embedded Python Client
+description: Use PoolSwitch directly inside a Python application without running a separate server.
 ---
+
+# Embedded Python Client
 
 ## Overview
 
@@ -44,8 +46,6 @@ response = client.post(
 print(response["choices"][0]["message"]["content"])
 ```
 
-In embedded mode, the client returns parsed JSON for JSON APIs, so you usually work with it like a normal Python dictionary.
-
 ## Async client
 
 ```python
@@ -61,8 +61,6 @@ async with AsyncPoolSwitchClient(
 ```
 
 ## Supported key formats
-
-You can pass keys as:
 
 - plain strings
 - dictionaries with `id`, `value`, and optional metadata
@@ -91,9 +89,7 @@ When you call `get`, `post`, `put`, `patch`, or `delete`, PoolSwitch automatical
 - cools down quota-exhausted keys
 - fails over to the next key when needed
 
-## Inspecting status
-
-You can inspect in-memory state at runtime:
+## Inspect status
 
 ```python
 status = client.status()
@@ -108,7 +104,7 @@ That includes:
 - estimated remaining quota
 - cooldown timestamps
 
-## When to choose embedded mode
+## When to choose embedded Python mode
 
 Use embedded mode when:
 
