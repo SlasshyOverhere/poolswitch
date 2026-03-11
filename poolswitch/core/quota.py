@@ -7,11 +7,16 @@ import httpx
 
 QUOTA_HINTS = (
     "quota",
-    "rate limit",
-    "too many requests",
     "insufficient_quota",
     "quota_exceeded",
     "credits exhausted",
+)
+
+RATE_LIMIT_HINTS = (
+    "rate limit",
+    "too many requests",
+    "slow down",
+    "throttled",
 )
 
 
@@ -45,6 +50,8 @@ async def classify_response(response: httpx.Response) -> tuple[bool, bool, str]:
     if response.status_code == 429:
         if any(hint in message_blob for hint in QUOTA_HINTS):
             return True, True, "quota_exceeded"
+        if any(hint in message_blob for hint in RATE_LIMIT_HINTS):
+            return True, False, "rate_limited"
         return True, False, "rate_limited"
 
     if response.status_code in (401, 403) and any(hint in message_blob for hint in QUOTA_HINTS):

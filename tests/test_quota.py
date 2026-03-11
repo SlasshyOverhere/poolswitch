@@ -50,6 +50,32 @@ async def test_classify_rate_limited_429() -> None:
 
 
 @pytest.mark.asyncio
+async def test_classify_too_many_requests_as_rate_limit() -> None:
+    response = httpx.Response(
+        429,
+        headers={"content-type": "application/json"},
+        json={"error": {"message": "Too many requests"}},
+    )
+    should_retry, quota_exceeded, reason = await classify_response(response)
+    assert should_retry is True
+    assert quota_exceeded is False
+    assert reason == "rate_limited"
+
+
+@pytest.mark.asyncio
+async def test_classify_unknown_429_defaults_to_rate_limit() -> None:
+    response = httpx.Response(
+        429,
+        headers={"content-type": "application/json"},
+        json={"error": {"message": "Request could not be completed right now"}},
+    )
+    should_retry, quota_exceeded, reason = await classify_response(response)
+    assert should_retry is True
+    assert quota_exceeded is False
+    assert reason == "rate_limited"
+
+
+@pytest.mark.asyncio
 async def test_classify_quota_exceeded_401() -> None:
     response = httpx.Response(
         401,

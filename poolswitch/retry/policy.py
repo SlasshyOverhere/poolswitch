@@ -28,7 +28,8 @@ class RetryPolicy:
     def for_attempt(self, attempt_number: int, retryable: bool, reason: str) -> RetryDecision:
         if not retryable or attempt_number >= self.attempts:
             return RetryDecision(should_retry=False, reason=reason)
-        delay = min(self.base_backoff_seconds * (2 ** (attempt_number - 1)), self.max_backoff_seconds)
+        normalized_attempt = max(attempt_number, 1)
+        delay = min(self.base_backoff_seconds * (2 ** (normalized_attempt - 1)), self.max_backoff_seconds)
         jitter = delay * self.jitter_ratio * random.random()
         return RetryDecision(should_retry=True, delay_seconds=delay + jitter, reason=reason)
 

@@ -28,6 +28,15 @@ def test_retry_policy_backoff_and_jitter(monkeypatch: pytest.MonkeyPatch) -> Non
     assert decision.delay_seconds == 1.0
 
 
+def test_retry_policy_attempt_zero_uses_first_backoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    policy = RetryPolicy(attempts=3, base_backoff_seconds=1.0, max_backoff_seconds=10.0, jitter_ratio=0.5)
+    monkeypatch.setattr("poolswitch.retry.policy.random.random", lambda: 0.0)
+
+    decision = policy.for_attempt(attempt_number=0, retryable=True, reason="rate_limited")
+    assert decision.should_retry is True
+    assert decision.delay_seconds == 1.0
+
+
 @pytest.mark.asyncio
 async def test_retry_sleep_only_when_needed(monkeypatch: pytest.MonkeyPatch) -> None:
     policy = RetryPolicy(attempts=1)

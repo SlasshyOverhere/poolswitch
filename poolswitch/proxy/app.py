@@ -39,6 +39,16 @@ HOP_BY_HOP_HEADERS = {
 }
 
 
+def _connection_header_tokens(request: Request) -> set[str]:
+    tokens: set[str] = set()
+    connection_value = request.headers.get("connection", "")
+    for token in connection_value.split(","):
+        cleaned = token.strip().lower()
+        if cleaned:
+            tokens.add(cleaned)
+    return tokens
+
+
 class AsyncRateLimiter:
     def __init__(self, requests_per_second: float) -> None:
         self.requests_per_second = max(requests_per_second, 0.1)
@@ -153,10 +163,13 @@ class ProxyService:
         )
 
     def _outbound_headers(self, request: Request, key_record: KeyRecord) -> dict[str, str]:
+        dynamic_hop_headers = _connection_header_tokens(request)
         headers = {
             key: value
             for key, value in request.headers.items()
-            if key.lower() not in HOP_BY_HOP_HEADERS and key.lower() != self.config.auth_header_name.lower()
+            if key.lower() not in HOP_BY_HOP_HEADERS
+            and key.lower() not in dynamic_hop_headers
+            and key.lower() != self.config.auth_header_name.lower()
         }
         key_value = key_record.definition.value
         if self.config.auth_scheme:

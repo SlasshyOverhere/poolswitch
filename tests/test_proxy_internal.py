@@ -73,6 +73,27 @@ async def test_outbound_headers_auth_and_hop_by_hop() -> None:
     await service.client.aclose()
 
 
+@pytest.mark.asyncio
+async def test_outbound_headers_strip_connection_named_headers() -> None:
+    config = _config(auth_scheme=None, auth_header_name="Authorization")
+    pool = KeyPool(config, [], InMemoryKeyStateStore(), RoundRobinStrategy(), Metrics())
+    service = ProxyService(config=config, metrics=Metrics(), pool=pool, client=httpx.AsyncClient())
+
+    request = _make_request(
+        {
+            "connection": "x-remove-me, , keep-alive",
+            "x-remove-me": "bye",
+            "x-custom": "ok",
+        }
+    )
+    headers = service._outbound_headers(request, _key_record("demo", "sk-demo"))
+
+    assert "x-remove-me" not in headers
+    assert headers["x-custom"] == "ok"
+
+    await service.client.aclose()
+
+
 def test_response_headers_filtering() -> None:
     headers = httpx.Headers({"connection": "keep-alive", "x-demo": "1"})
     filtered = ProxyService._response_headers(headers)
