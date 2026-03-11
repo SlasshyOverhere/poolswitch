@@ -12,30 +12,32 @@
     "name": "GitHub",
     "url": "https://github.com/SlasshyOverhere/poolswitch"
   },
-  "navigation": [
-    {
-      "group": "Getting Started",
-      "pages": [
-        "docs/introduction",
-        "docs/quickstart"
-      ]
-    },
-    {
-      "group": "Guides",
-      "pages": [
-        "docs/embedded-python",
-        "docs/proxy-mode",
-        "docs/configuration",
-        "docs/strategies"
-      ]
-    },
-    {
-      "group": "Reference",
-      "pages": [
-        "docs/architecture",
-        "docs/metrics-health",
-        "docs/deploying-with-mintlify"
-      ]
-    }
-  ]
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "docs/introduction",
+          "docs/quickstart"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "docs/embedded-python",
+          "docs/proxy-mode",
+          "docs/configuration",
+          "docs/strategies"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "docs/architecture",
+          "docs/metrics-health",
+          "docs/deploying-with-mintlify"
+        ]
+      }
+    ]
+  }
 }
