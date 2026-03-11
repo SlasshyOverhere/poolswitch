@@ -165,14 +165,25 @@ def test_proxy_rejects_internal_post() -> None:
         assert response.status_code == 404
 
 
-def test_healthz_and_metrics_routes() -> None:
+def test_health_routes_root_and_metrics() -> None:
     config = _config()
     app = create_app(config)
 
     with TestClient(app) as client:
-        health = client.get("/healthz")
+        root = client.get("/")
+        assert root.status_code == 200
+        assert root.json()["endpoints"]["health"] == "/health"
+
+        health = client.get("/health")
         assert health.status_code == 200
         assert health.json() == {"status": "ok"}
+
+        legacy_health = client.get("/healthz")
+        assert legacy_health.status_code == 200
+        assert legacy_health.json() == {"status": "ok"}
+
+        favicon = client.get("/favicon.ico")
+        assert favicon.status_code == 204
 
         metrics = client.get("/metrics")
         assert metrics.status_code == 200

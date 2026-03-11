@@ -236,9 +236,30 @@ def create_app(config: AppConfig) -> FastAPI:
     app = FastAPI(title="PoolSwitch Proxy", lifespan=lifespan)
     app.state.config = config
 
+    @app.get("/")
+    async def root() -> dict[str, Any]:
+        return {
+            "name": "poolswitch",
+            "status": "ok",
+            "upstream_base_url": config.upstream_base_url,
+            "endpoints": {
+                "health": "/health",
+                "status": "/status",
+                "metrics": "/metrics",
+            },
+        }
+
+    @app.get("/health")
+    async def health() -> dict[str, str]:
+        return {"status": "ok"}
+
     @app.get("/healthz")
     async def healthz() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def favicon() -> Response:
+        return Response(status_code=204)
 
     @app.get("/status")
     async def status() -> dict[str, Any]:
@@ -268,7 +289,7 @@ def create_app(config: AppConfig) -> FastAPI:
 
     @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"])
     async def proxy(path: str, request: Request) -> Response:
-        if path in {"metrics", "status", "healthz"}:
+        if path in {"", "health", "healthz", "metrics", "status", "favicon.ico"}:
             raise HTTPException(status_code=404, detail="Route handled internally.")
         return await app.state.proxy_service.handle(request, path)
 

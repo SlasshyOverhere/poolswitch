@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,15 @@ from poolswitch.config import AppConfig, load_config
 from poolswitch.core.factory import build_key_pool
 from poolswitch.metrics import Metrics
 from poolswitch.proxy.app import create_app
+
+
+def _configure_event_loop_policy() -> None:
+    if not sys.platform.startswith("win"):
+        return
+    selector_policy = getattr(asyncio, "WindowsSelectorEventLoopPolicy", None)
+    if selector_policy is None:
+        return
+    asyncio.set_event_loop_policy(selector_policy())
 
 
 def _load(config_path: str | None, listen_host: str | None, listen_port: int | None) -> AppConfig:
@@ -49,9 +59,16 @@ def main() -> None:
 @click.option("--listen-port", type=int, required=False)
 def start(config_path: str | None, listen_host: str | None, listen_port: int | None) -> None:
     """Start the local proxy server."""
+    _configure_event_loop_policy()
     config = _load(config_path, listen_host, listen_port)
     app = create_app(config)
-    uvicorn.run(app, host=config.listen_host, port=config.listen_port, log_level="info")
+    uvicorn.run(
+        app,
+        host=config.listen_host,
+        port=config.listen_port,
+        log_level="info",
+        timeout_graceful_shutdown=2,
+    )
 
 
 async def _status_json(config: AppConfig) -> str:
