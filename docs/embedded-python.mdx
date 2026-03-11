@@ -20,20 +20,31 @@ Instead of running a local proxy and pointing your app at `localhost`, you impor
 from poolswitch import PoolSwitchClient
 
 client = PoolSwitchClient(
-    upstream_base_url="https://api.example.com",
+    upstream_base_url="https://api.openai.com",
     keys=[
-        {"id": "free-1", "value": "key-1"},
-        {"id": "free-2", "value": "key-2"},
-        {"id": "free-3", "value": "key-3"},
+        {"id": "openai-free-1", "value": "sk-aaa"},
+        {"id": "openai-free-2", "value": "sk-bbb"},
+        {"id": "openai-free-3", "value": "sk-ccc"},
     ],
     strategy="quota_failover",
     retry_attempts=3,
     cooldown_seconds=3600,
 )
 
-result = client.post("/search", json={"q": "poolswitch"})
-print(result)
+response = client.post(
+    "/v1/chat/completions",
+    json={
+        "model": "gpt-4o-mini",
+        "messages": [
+            {"role": "user", "content": "Write a one-line summary of PoolSwitch."}
+        ],
+    },
+)
+
+print(response["choices"][0]["message"]["content"])
 ```
+
+In embedded mode, the client returns parsed JSON for JSON APIs, so you usually work with it like a normal Python dictionary.
 
 ## Async client
 
@@ -41,12 +52,12 @@ print(result)
 from poolswitch import AsyncPoolSwitchClient
 
 async with AsyncPoolSwitchClient(
-    upstream_base_url="https://api.example.com",
-    keys=["key-1", "key-2", "key-3"],
+    upstream_base_url="https://api.openai.com",
+    keys=["sk-aaa", "sk-bbb", "sk-ccc"],
     strategy="quota_failover",
 ) as client:
-    result = await client.get("/search", params={"q": "poolswitch"})
-    print(result)
+    response = await client.get("/v1/models")
+    print(response["data"][0]["id"])
 ```
 
 ## Supported key formats
@@ -61,11 +72,11 @@ You can pass keys as:
 from poolswitch import PoolSwitchClient
 
 client = PoolSwitchClient(
-    upstream_base_url="https://api.example.com",
+    upstream_base_url="https://api.openai.com",
     keys=[
-        "key-1",
-        {"id": "free-2", "value": "key-2", "monthly_quota": 100},
-        {"id": "paid", "value": "key-3", "metadata": {"tier": "pro"}},
+        "sk-aaa",
+        {"id": "free-2", "value": "sk-bbb", "monthly_quota": 100},
+        {"id": "paid", "value": "sk-ccc", "metadata": {"tier": "pro"}},
     ],
 )
 ```

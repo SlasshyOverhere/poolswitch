@@ -30,8 +30,8 @@ PoolSwitch supports two usage patterns:
     client = PoolSwitchClient(
         upstream_base_url="https://api.openai.com",
         keys=[
-            {"id": "primary", "value": "sk-123"},
-            {"id": "backup", "value": "sk-456"},
+            {"id": "openai-free-1", "value": "sk-123"},
+            {"id": "openai-free-2", "value": "sk-456"},
         ],
         strategy="quota_failover",
         retry_attempts=3,
@@ -46,7 +46,7 @@ PoolSwitch supports two usage patterns:
         },
     )
 
-    print(response)
+    print(response["choices"][0]["message"]["content"])
     ```
 
     For async Python applications:
@@ -59,7 +59,7 @@ PoolSwitch supports two usage patterns:
         keys=["sk-123", "sk-456"],
     ) as client:
         response = await client.get("/v1/models")
-        print(response)
+        print(response["data"][0]["id"])
     ```
 
     The client handles:
