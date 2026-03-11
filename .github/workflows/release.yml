@@ -71,6 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     defaults:
       run:
         working-directory: sdk-node
@@ -81,7 +82,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22.14.0"
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
@@ -93,8 +94,6 @@ jobs:
       - name: Publish Node SDK
         if: github.event_name == 'push'
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   release-go-sdk:
     name: Release Go SDK
