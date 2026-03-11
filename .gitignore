@@ -29,6 +29,7 @@ coverage/
 
 # Go
 coverage.out
+sdk-go/coverage
 *.test
 
 # Local tools and generated binaries
