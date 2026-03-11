@@ -5,22 +5,59 @@ description: 'Start rotating API keys in your app or behind a local proxy in und
 
 ## Installation
 
-Install the main Python package:
-
-```bash
+<CodeGroup>
+```bash Python
 pip install poolswitch
 ```
+
+```bash Node.js
+npm install poolswitch-node
+```
+</CodeGroup>
 
 ## Choose your mode
 
 PoolSwitch supports two usage patterns:
 
 - **Embedded client**
-  Best for Python apps. No separate process to run.
+  Best for Python, Node.js, and TypeScript apps. No separate process to run.
 - **Proxy server**
   Best for multi-language teams or shared internal gateways.
 
 <Tabs>
+  <Tab title="Embedded Client (Node.js)">
+    This is the recommended path if your app is written in JavaScript or TypeScript.
+
+    ```ts
+    import { PoolSwitchClient } from "poolswitch-node";
+
+    const client = new PoolSwitchClient({
+      upstreamBaseUrl: "https://api.openai.com",
+      keys: [
+        { id: "openai-free-1", value: process.env.OPENAI_KEY_1! },
+        { id: "openai-free-2", value: process.env.OPENAI_KEY_2! }
+      ],
+      strategy: "quota_failover"
+    });
+
+    const response = await client.post("/v1/chat/completions", {
+      json: {
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: "Say hello from PoolSwitch." }]
+      }
+    });
+
+    console.log(response.choices[0].message.content);
+    ```
+
+    The client handles:
+
+    - selecting the next key
+    - injecting the auth header
+    - retrying safe failures
+    - cooling down exhausted keys
+    - failing over to another account
+  </Tab>
   <Tab title="Embedded Client (Python)">
     This is the recommended path if your app is written in Python.
 
@@ -62,13 +99,6 @@ PoolSwitch supports two usage patterns:
         print(response["data"][0]["id"])
     ```
 
-    The client handles:
-
-    - selecting the next key
-    - injecting the auth header
-    - retrying safe failures
-    - cooling down exhausted keys
-    - failing over to another account
   </Tab>
   <Tab title="Proxy Mode">
     Run PoolSwitch as a local server if you want plain HTTP access from any language.
@@ -118,6 +148,9 @@ PoolSwitch supports two usage patterns:
 <CardGroup cols={2}>
   <Card title="Embedded Python Guide" icon="box-open" href="/docs/embedded-python">
     See the package API in more detail.
+  </Card>
+  <Card title="Embedded Node.js Guide" icon="code" href="/docs/embedded-node">
+    Use PoolSwitch directly inside JavaScript or TypeScript apps.
   </Card>
   <Card title="Configuration Reference" icon="sliders" href="/docs/configuration">
     Tune retries, cooldowns, storage, and key metadata.

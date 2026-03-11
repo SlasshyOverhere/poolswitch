@@ -1,0 +1,140 @@
+---
+title: 'Embedded Node.js Client'
+description: 'Use PoolSwitch directly inside a Node.js or TypeScript app without running a separate proxy.'
+---
+
+## Overview
+
+The embedded Node.js client is the easiest way to add key rotation to a JavaScript or TypeScript app.
+
+You give PoolSwitch:
+
+- the upstream API base URL
+- a list of API keys
+- an optional routing strategy
+- retry and cooldown settings when you need them
+
+Then you use it like a normal `fetch`-style client.
+
+## Install
+
+```bash
+npm install poolswitch-node
+```
+
+## Fastest setup
+
+```ts
+import { PoolSwitchClient } from "poolswitch-node";
+
+const client = new PoolSwitchClient({
+  upstreamBaseUrl: "https://api.openai.com",
+  keys: [
+    { id: "openai-free-1", value: process.env.OPENAI_KEY_1! },
+    { id: "openai-free-2", value: process.env.OPENAI_KEY_2! }
+  ],
+  strategy: "quota_failover"
+});
+
+const response = await client.post("/v1/chat/completions", {
+  json: {
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: "Give me one sentence about PoolSwitch." }]
+  }
+});
+
+console.log(response.choices[0].message.content);
+```
+
+This is the main embedded flow:
+
+- no local proxy to run
+- no manual key switching
+- no custom retry loops in app code
+
+## CommonJS
+
+```js
+const { PoolSwitchClient } = require("poolswitch-node");
+
+const client = new PoolSwitchClient({
+  upstreamBaseUrl: "https://api.openai.com",
+  keys: [
+    { id: "openai-free-1", value: process.env.OPENAI_KEY_1 },
+    { id: "openai-free-2", value: process.env.OPENAI_KEY_2 }
+  ]
+});
+
+const response = await client.post("/v1/chat/completions", {
+  json: {
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: "Hello" }]
+  }
+});
+```
+
+## Key formats
+
+You can pass keys as plain strings:
+
+```ts
+const client = new PoolSwitchClient({
+  upstreamBaseUrl: "https://api.openai.com",
+  keys: [process.env.OPENAI_KEY_1!, process.env.OPENAI_KEY_2!]
+});
+```
+
+Or as objects when you want stable ids or quota metadata:
+
+```ts
+const client = new PoolSwitchClient({
+  upstreamBaseUrl: "https://api.openai.com",
+  keys: [
+    { id: "free-1", value: process.env.OPENAI_KEY_1!, monthlyQuota: 100 },
+    { id: "free-2", value: process.env.OPENAI_KEY_2!, monthlyQuota: 100 }
+  ],
+  strategy: "quota_failover",
+  retryAttempts: 3,
+  cooldownSeconds: 3600
+});
+```
+
+## What the embedded client does automatically
+
+When you call `get`, `post`, `put`, `patch`, or `delete`, PoolSwitch automatically:
+
+- chooses a healthy key
+- injects the configured auth header
+- retries safe failures
+- handles retryable `429` responses
+- cools down quota-exhausted keys
+- fails over to another key when needed
+
+## Checking client status
+
+```ts
+const status = client.status();
+console.log(status.keys);
+```
+
+That includes:
+
+- total requests per key
+- error counts
+- failover counts
+- estimated remaining quota
+- cooldown timestamps
+
+## When to use embedded Node mode
+
+Use embedded mode when:
+
+- your app is already written in Node.js or TypeScript
+- you want zero extra infrastructure
+- each app should manage its own key pool in-process
+
+Use proxy mode instead when:
+
+- multiple services need to share one pool
+- non-JavaScript apps need the same gateway
+- you want one central HTTP endpoint with metrics

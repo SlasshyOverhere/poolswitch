@@ -24,7 +24,7 @@ If an API only gives you `100 searches per month`, one key is rarely enough. Mos
 It can run in two modes:
 
 1. **Embedded package mode**
-   Use the Python client directly inside your app. This is the main product experience for Python users.
+   Use the Python or Node.js client directly inside your app. This is the main product experience for most teams.
 2. **Proxy mode**
    Run a local or shared HTTP proxy when you want language-agnostic access from Node.js, Go, curl, or multiple services.
 
@@ -34,8 +34,8 @@ It can run in two modes:
   <Card title="No Manual Failover Logic" icon="shield-check">
     Developers do not need to hand-roll round robin, retries, or cooldown logic in every project.
   </Card>
-  <Card title="Embedded Package" icon="box-open">
-    Use PoolSwitch directly inside a Python app with a normal client API.
+  <Card title="Embedded Clients" icon="box-open">
+    Use PoolSwitch directly inside Python or Node.js apps with a normal client API.
   </Card>
   <Card title="Optional Proxy Server" icon="server">
     Run the same routing engine as a local or shared HTTP gateway when your stack is multi-language.
@@ -56,6 +56,9 @@ It can run in two modes:
 <CardGroup cols={2}>
   <Card title="Embedded Python Client" icon="bolt" href="/docs/embedded-python">
     Best when your application is already in Python and you want a direct in-process package.
+  </Card>
+  <Card title="Embedded Node.js Client" icon="code" href="/docs/embedded-node">
+    Best when your application is in JavaScript or TypeScript and you want zero proxy setup.
   </Card>
   <Card title="Proxy Mode" icon="network-wired" href="/docs/proxy-mode">
     Best when multiple languages or services need to share the same key pool over HTTP.

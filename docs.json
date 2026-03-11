@@ -25,6 +25,7 @@
         "group": "Guides",
         "pages": [
           "docs/embedded-python",
+          "docs/embedded-node",
           "docs/proxy-mode",
           "docs/configuration",
           "docs/strategies"

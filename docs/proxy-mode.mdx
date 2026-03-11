@@ -78,9 +78,9 @@ result = client.post(
 ```
 
 ```javascript Node.js
-const { PoolSwitchClient } = require("poolswitch-node");
+const { PoolSwitchProxyClient } = require("poolswitch-node");
 
-const client = new PoolSwitchClient("http://127.0.0.1:8080");
+const client = new PoolSwitchProxyClient("http://127.0.0.1:8080");
 const result = await client.post("/v1/chat/completions", {
   json: {
     model: "gpt-4o-mini",
@@ -122,3 +122,5 @@ Use proxy mode when:
 - multiple languages need the same gateway
 - you want a shared pool for several services
 - you want Prometheus metrics from one HTTP endpoint
+
+If your app is already in JavaScript or TypeScript and does not need a shared gateway, use the [embedded Node.js client](/docs/embedded-node) instead.

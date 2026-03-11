@@ -1,12 +1,13 @@
 {
   "name": "poolswitch-node",
   "version": "0.1.0",
-  "description": "Lightweight Node.js client for PoolSwitch proxy servers.",
+  "description": "Embedded and proxy-ready Node.js client for PoolSwitch.",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "exports": {
     ".": {
+      "import": "./src/index.mjs",
       "require": "./src/index.js",
       "types": "./src/index.d.ts"
     }

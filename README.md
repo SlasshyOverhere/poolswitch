@@ -10,6 +10,7 @@ It is designed for provider APIs such as OpenAI, Anthropic, Groq, Google, Huggin
 ## Features
 
 - Embedded Python client with built-in key rotation, retry, cooldown, and quota failover
+- Embedded Node.js client with built-in key rotation, retry, cooldown, and quota failover
 - Async local HTTP proxy with low overhead
 - Key rotation strategies: `round_robin`, `least_used`, `random`, `quota_failover`
 - Quota-aware cooldowns and automatic failover
@@ -18,11 +19,35 @@ It is designed for provider APIs such as OpenAI, Anthropic, Groq, Google, Huggin
 - YAML, environment variable, and CLI configuration
 - Prometheus-compatible `/metrics` endpoint
 - CLI commands for startup, status, metrics, and key management
-- Thin SDKs for Python, Node.js, and Go
+- Proxy SDKs for Python, Node.js, and Go
 
 ## Quick Start
 
 ### Embedded Client (Recommended)
+
+Node.js / TypeScript:
+
+```ts
+import { PoolSwitchClient } from "poolswitch-node";
+
+const client = new PoolSwitchClient({
+  upstreamBaseUrl: "https://api.openai.com",
+  keys: [
+    { id: "primary", value: process.env.OPENAI_KEY_1! },
+    { id: "backup", value: process.env.OPENAI_KEY_2! }
+  ],
+  strategy: "quota_failover"
+});
+
+const response = await client.post("/v1/chat/completions", {
+  json: {
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: "hello" }]
+  }
+});
+```
+
+Python:
 
 ```python
 from poolswitch import PoolSwitchClient
