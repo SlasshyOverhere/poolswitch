@@ -1,0 +1,127 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+      - "sdk-python-v*"
+      - "sdk-node-v*"
+      - "sdk-go-v*"
+  workflow_dispatch:
+
+jobs:
+  publish-core-python:
+    name: Publish Core Python Package
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref_name, 'v')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build core Python package
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build .
+          python -m twine check dist/*
+
+      - name: Publish core Python package
+        if: github.event_name == 'push'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+
+  publish-sdk-python:
+    name: Publish Python SDK
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref_name, 'sdk-python-v')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build Python SDK
+        working-directory: sdk-python
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build .
+          python -m twine check dist/*
+
+      - name: Publish Python SDK
+        if: github.event_name == 'push'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: sdk-python/dist/
+
+  publish-node:
+    name: Publish Node SDK
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref_name, 'sdk-node-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: sdk-node
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish Node SDK
+        if: github.event_name == 'push'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  release-go-sdk:
+    name: Release Go SDK
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref_name, 'sdk-go-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: sdk-go
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache-dependency-path: sdk-go/go.mod
+
+      - name: Run tests
+        run: go test -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Create GitHub release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body: |
+            Go module path: `github.com/SlasshyOverhere/poolswitch/sdk-go`

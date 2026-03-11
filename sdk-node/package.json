@@ -1,0 +1,37 @@
+{
+  "name": "poolswitch-node",
+  "version": "0.1.0",
+  "description": "Lightweight Node.js client for PoolSwitch proxy servers.",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "api",
+    "proxy",
+    "apikey",
+    "quota",
+    "failover",
+    "sdk"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "c8": "^10.1.2"
+  },
+  "scripts": {
+    "test": "c8 --100 --all --include src/**/*.js node --test test/**/*.test.js"
+  }
+}
+
